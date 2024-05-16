@@ -1,42 +1,7 @@
-#version: '3.8'
-#
-#services:
-#  app:
-#    image: 'lmsdemo:latest'
-#    build:
-#      context: .
-#    container_name: lmsdemo_container
-#    depends_on:
-#      - db
-#    environment:
-#      - POSTGRES_USER=lms
-#      - POSTGRES_PASSWORD=lms
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/lmsdb
-#      - SPRING_DATASOURCE_USERNAME=lms
-#      - SPRING_DATASOURCE_PASSWORD=lms
-#      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-#
-#    ports:
-#      - "8080:8080"
-#
-#  db:
-#    image: postgres
-#    container_name: db
-#    environment:
-#      - POSTGRES_USER=lms
-#      - POSTGRES_PASSWORD=lms
-#      - POSTGRES_DB=lmsdb
-#    ports:
-#      - "5432:5432"
-
-
-
-
 version: "3.8"
 services:
   postgresdb:
     image: postgres
-    restart: unless-stopped
     env_file: ./.env
     environment:
       - POSTGRES_USER=$POSTGRESDB_USER
@@ -51,26 +16,13 @@ services:
     depends_on:
       - postgresdb
     build: .
-    restart: on-failure
     env_file: ./.env
-    ports:
-      -  $SPRING_LOCAL_PORT:$SPRING_DOCKER_PORT
     environment:
-#      SPRING_APPLICATION_JSON: '{
-#        "spring.datasource.url"  : "jdbc:postgresql://postgresdb:$POSTGRESDB_DOCKER_PORT/$POSTGRESDB_DATABASE",
-#        "spring.datasource.username" : "$POSTGRESDB_USER",
-#        "spring.datasource.password" : "$POSTGRESDB_ROOT_PASSWORD",
-#        "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.PostgreSQLDialect",
-#        "spring.jpa.hibernate.ddl-auto" : "update"
-#      }'
-       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresdb:$POSTGRESDB_DOCKER_PORT/$POSTGRESDB_DATABASE
-       - SPRING_DATASOURCE_USERNAME=$POSTGRESDB_USER
-       - SPRING_DATASOURCE_PASSWORD=$POSTGRESDB_ROOT_PASSWORD
-       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-    volumes:
-      - ./:/src
-#    stdin_open: true
-#    tty: true
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresdb:$POSTGRESDB_DOCKER_PORT/$POSTGRESDB_DATABASE
+      - SPRING_DATASOURCE_USERNAME=$POSTGRESDB_USER
+      - SPRING_DATASOURCE_PASSWORD=$POSTGRESDB_ROOT_PASSWORD
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    ports:
+      - $SPRING_LOCAL_PORT:$SPRING_DOCKER_PORT
 volumes:
   db:
-#    driver: local
